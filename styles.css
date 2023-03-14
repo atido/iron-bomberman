@@ -1,0 +1,7 @@
+canvas {
+  border: 1px solid black;
+}
+#main-timer {
+  border: 5px solid red;
+  display: inline;
+}
