@@ -7,45 +7,80 @@ const game = {
   gameOver: false,
   player: undefined,
   background: undefined,
-  walls: [],
-  timer: context.timer.main,
+  obstacles: [],
+  timer: config.timer.main,
   start() {
-    this.checkIfRun();
+    this.checkIfGameRun();
     this.reset();
     timer(game.timer, "#main-timer");
     this.animate();
   },
   animate() {
     this.clear();
-    this.generateWalls();
-    this.drawAll();
-    if (!this.gameOver) this.animationFrameId = requestAnimationFrame(() => this.animate());
+    this.updateAll();
+    if (!this.checkGameOver()) this.animationFrameId = requestAnimationFrame(() => this.animate());
   },
   clear() {
     this.ctx.clearRect(0, 0, this.width, this.height);
   },
   reset() {
+    this.obstacles = [];
     this.gameOver = false;
-    this.player = new Player(10, 10);
+    this.player = new Player(config.wall.width, config.wall.height);
     this.background = new Background();
-    this.walls = [];
-    this.timer = context.timer.main;
+    this.generateWalls();
+    this.timer = config.timer.main;
   },
   generateWalls() {
-    for (let i = 1; i <= 6; i++) {
-      for (let j = 1; j <= 5; j++) {
-        this.walls.push(new Wall(100 * i, 100 * j, false));
-      }
-    }
+    map.forEach((row, i) => {
+      row.forEach((element, j) => {
+        switch (element) {
+          case "x":
+            this.obstacles.push(new Wall(j * config.wall.width, i * config.wall.height, false));
+            break;
+          case "o":
+            this.obstacles.push(new Wall(j * config.wall.width, i * config.wall.height, true));
+            break;
+        }
+      });
+    });
   },
-  drawAll() {
-    this.background.draw();
-    this.player.draw();
-    this.walls.forEach((wall) => wall.draw());
+
+  updateAll() {
+    this.background.update();
+    this.obstacles.forEach((obstacle) => obstacle.update());
+    this.player.move();
+    this.checkCollision();
+    this.player.update();
   },
-  checkIfRun() {
+  checkGameOver() {
+    return this.player.isDead;
+  },
+  checkIfGameRun() {
     if (this.animationFrameId) {
       cancelAnimationFrame(this.animationFrameId);
     }
+  },
+  checkCollision() {
+    // Filtre uniquement sur le carré de 3x3 pour réduire les collisions à tester
+    this.obstacles
+      .filter(
+        (obstacle) =>
+          obstacle.left() >=
+            this.player.left() - config.wall.width - (this.player.left() % config.wall.width) &&
+          obstacle.right() <=
+            this.player.right() +
+              config.wall.width +
+              (config.wall.width - (this.player.right() % config.wall.width)) &&
+          obstacle.top() >=
+            this.player.top() - (this.player.top() % config.wall.height) - config.wall.height &&
+          obstacle.bottom() <=
+            this.player.bottom() +
+              config.wall.height +
+              (config.wall.height - (this.player.bottom() % config.wall.height))
+      )
+      .forEach((obstacle) => {
+        this.player.hitWith(obstacle);
+      });
   },
 };

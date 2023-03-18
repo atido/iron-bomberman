@@ -1,11 +1,5 @@
-class Background extends Component {
+class Background extends ComponentImage {
   constructor() {
-    super(0, 0, game.width, game.height);
-
-    this.image = new Image();
-    this.image.src = "../images/background-empty.png";
-  }
-  draw() {
-    game.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+    super(0, 0, game.width, game.height, config.background.imageSrc);
   }
 }

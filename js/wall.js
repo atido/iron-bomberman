@@ -1,11 +1,21 @@
-class Wall extends Component {
+class Wall extends ComponentImageAnimation {
   constructor(x, y, breakable) {
-    super(x, y, 50, 50);
-    this.image = new Image();
-    this.image.src = breakable ? "../images/breakable-wall.png" : "../images/unbreakable-wall.png";
+    const image = breakable ? config.wall.imageBreakable : config.wall.imageUnbreakable;
+    super(
+      x,
+      y,
+      config.wall.width,
+      config.wall.height,
+      image.src,
+      image.framesMax,
+      breakable ? { x: 1, y: 0 } : { x: 0, y: 0 },
+      Math.ceil(config.bomb.timer / (16 * image.framesMax)),
+      false
+    );
     this.breakable = breakable;
   }
-  draw() {
-    game.ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
+  breakWall(wall) {
+    this.animate = true;
+    this.decreaseTimerBeforeRemove({ x: wall.x, y: wall.y }, Wall, config.wall.timer);
   }
 }
