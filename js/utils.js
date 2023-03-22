@@ -5,3 +5,7 @@ function timer(time, htmlId) {
     if (time == 0) clearInterval(timerId);
   }, 1000);
 }
+
+function randomLuck(winCondition, length) {
+  return Math.floor(Math.random() * length) < winCondition;
+}

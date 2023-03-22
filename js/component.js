@@ -1,10 +1,10 @@
 class Component {
-  constructor(x, y, width, height) {
+  constructor(x, y, width, height, velocity = { x: 0, y: 0 }) {
     this.x = x;
     this.y = y;
     this.width = width;
     this.height = height;
-    this.velocity = { x: 0, y: 0 };
+    this.velocity = velocity;
   }
   top() {
     return this.y;
@@ -18,12 +18,16 @@ class Component {
   bottom() {
     return this.height + this.y;
   }
+  setVelocity(velocity) {
+    this.velocity = velocity;
+  }
   isCollisionWith(obstacle) {
+    const padding = (obstacle.width - this.width) / 2 - 1;
     return (
-      this.right() + this.velocity.x > obstacle.left() &&
-      this.top() + this.velocity.y < obstacle.bottom() &&
-      this.bottom() + this.velocity.y > obstacle.top() &&
-      this.left() + this.velocity.x < obstacle.right()
+      this.right() + this.velocity.x >= obstacle.left() - padding &&
+      this.top() + this.velocity.y <= obstacle.bottom() + padding &&
+      this.bottom() + this.velocity.y >= obstacle.top() - padding &&
+      this.left() + this.velocity.x <= obstacle.right() + padding
     );
   }
   decreaseTimerBeforeRemove(position, type, timer, callback) {
@@ -64,7 +68,9 @@ class ComponentImageAnimation extends ComponentImage {
     framesMax = 1,
     offset = { x: 0, y: 0 },
     framesHold = 10,
-    animate = true
+    animate = true,
+    imageWidth = width,
+    imageHeight = height
   ) {
     super(x, y, width, height, imageSrc);
     this.framesMax = framesMax;
@@ -73,6 +79,8 @@ class ComponentImageAnimation extends ComponentImage {
     this.framesHold = framesHold;
     this.offset = offset;
     this.animate = animate;
+    this.imageWidth = imageWidth;
+    this.imageHeight = imageHeight;
   }
   draw() {
     game.ctx.drawImage(
@@ -82,9 +90,9 @@ class ComponentImageAnimation extends ComponentImage {
       this.image.width / this.framesMax - this.offset.x,
       this.image.height - this.offset.y,
       this.x,
-      this.y,
-      this.width,
-      this.height
+      this.y - (this.imageHeight - this.imageWidth),
+      this.imageWidth,
+      this.imageHeight
     );
   }
   animateFrames() {
@@ -101,5 +109,101 @@ class ComponentImageAnimation extends ComponentImage {
   update() {
     this.draw();
     if (this.animate) this.animateFrames();
+  }
+}
+class ComponentMovingAnimation extends ComponentImageAnimation {
+  constructor(x, y, movingElement) {
+    super(
+      x,
+      y,
+      movingElement.characteristics.width,
+      movingElement.characteristics.height,
+      movingElement.animations.down.stop.src,
+      movingElement.animations.down.stop.framesMax,
+      movingElement.characteristics.image.offset,
+      10,
+      true,
+      movingElement.characteristics.image.width,
+      movingElement.characteristics.image.height
+    );
+    this.animations = movingElement.animations;
+    this.lastAnimation = movingElement.animations.down.stop;
+    this.isDead = false;
+    this.characteristics = movingElement.characteristics;
+    this.audios = movingElement.audios;
+    this.velocityMax = {
+      x: this.characteristics.defaultVelocity.x,
+      y: this.characteristics.defaultVelocity.y,
+    };
+  }
+  update() {
+    this.checkCollision();
+    this.updatePostion();
+    this.draw();
+    if (this.animate) this.animateFrames();
+  }
+  updatePostion() {
+    this.x += this.velocity.x;
+    this.y += this.velocity.y;
+  }
+  stop() {
+    this.velocity.x = 0;
+    this.velocity.y = 0;
+  }
+  moveUp() {
+    this.velocity.y = -this.velocityMax.y;
+    this.switchAnimation(this.animations.up.run);
+  }
+  moveDown() {
+    this.velocity.y = this.velocityMax.y;
+    this.switchAnimation(this.animations.down.run);
+  }
+  moveLeft() {
+    this.velocity.x = -this.velocityMax.x;
+    this.switchAnimation(this.animations.left.run);
+  }
+  moveRight() {
+    this.velocity.x = this.velocityMax.x;
+    this.switchAnimation(this.animations.right.run);
+  }
+  switchAnimation(animation) {
+    if (this.lastAnimation !== animation) {
+      this.framesCurrent = 0;
+      this.lastAnimation = animation;
+      this.image.src = animation.src;
+      this.framesMax = animation.framesMax;
+    }
+  }
+  filterObstaclesAround() {
+    return game.obstacles.filter(
+      (obstacle) =>
+        obstacle.left() >= this.left() - config.wall.width - (this.left() % config.wall.width) &&
+        obstacle.right() <=
+          this.right() +
+            config.wall.width +
+            (config.wall.width - (this.right() % config.wall.width)) &&
+        obstacle.top() >= this.top() - (this.top() % config.wall.height) - config.wall.height &&
+        obstacle.bottom() <=
+          this.bottom() +
+            config.wall.height +
+            (config.wall.height - (this.bottom() % config.wall.height))
+    );
+  }
+  checkCollision() {
+    // Filtre uniquement sur le carré de 3x3 pour réduire les collisions à tester
+    this.filterObstaclesAround().forEach((obstacle) => {
+      this.hitWith(obstacle);
+    });
+    if (this.constructor == Player) game.enemies.forEach((enemy) => this.hitWith(enemy));
+  }
+  hitWith(obstacle) {
+    if (this.isCollisionWith(obstacle)) {
+      this.stop();
+    }
+  }
+  dies() {
+    this.stop();
+    playAudio(this.audios.dies.src);
+    this.isDead = true;
   }
 }

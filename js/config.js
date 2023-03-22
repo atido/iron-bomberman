@@ -1,20 +1,126 @@
 const dictionary = {
-  artifact: { bomb: "bomb", flame: "flame", roller: "roller" },
-  direction: { N: "N", S: "S", E: "E", W: "W" },
+  element: { score: "score", bomb: "bomb", flame: "flame", roller: "roller" },
+  direction: { up: "up", down: "down", right: "right", left: "left" },
+  action: {
+    up: { run: "run-up", stop: "stop-up" },
+    down: { run: "run-down", stop: "stop-down" },
+    right: { run: "run-right", stop: "stop-right" },
+    left: { run: "run-left", stop: "stop-left" },
+  },
 };
 const config = {
   background: {
     imageSrc: "../images/background-empty.png",
   },
-  player: {
-    width: 40,
-    height: 40,
-    bombQty: 3,
-    velocity: {
-      x: 5,
-      y: 5,
+  players: [
+    {
+      id: 1,
+      characteristics: {
+        width: 40,
+        height: 40,
+        bombQty: 13,
+        bombPower: 2,
+        defaultVelocity: { x: 5, y: 5 },
+        image: {
+          width: 40,
+          height: 60,
+          offset: { x: 1, y: 0 },
+        },
+      },
+      audios: {
+        dies: { src: "../sounds/playerDies.mp3" },
+      },
+      animations: {
+        up: {
+          run: { src: "../images/player1-runUp.png", framesMax: 2 },
+          stop: { src: "../images/player1-stopUp.png", framesMax: 1 },
+        },
+        down: {
+          run: { src: "../images/player1-runDown.png", framesMax: 2 },
+          stop: { src: "../images/player1-stopDown.png", framesMax: 1 },
+        },
+        right: {
+          run: { src: "../images/player1-runRight.png", framesMax: 2 },
+          stop: { src: "../images/player1-stopRight.png", framesMax: 1 },
+        },
+        left: {
+          run: { src: "../images/player1-runLeft.png", framesMax: 2 },
+          stop: { src: "../images/player1-stopLeft.png", framesMax: 1 },
+        },
+      },
     },
-  },
+    {
+      id: 2,
+      characteristics: {
+        width: 40,
+        height: 40,
+        bombQty: 13,
+        bombPower: 2,
+        defaultVelocity: { x: 5, y: 5 },
+        image: {
+          width: 40,
+          height: 60,
+          offset: { x: 1, y: 0 },
+        },
+      },
+      audios: {
+        dies: { src: "../sounds/playerDies.mp3" },
+      },
+      animations: {
+        up: {
+          run: { src: "../images/player1-runUp.png", framesMax: 2 },
+          stop: { src: "../images/player1-stopUp.png", framesMax: 1 },
+        },
+        down: {
+          run: { src: "../images/player1-runDown.png", framesMax: 2 },
+          stop: { src: "../images/player1-stopDown.png", framesMax: 1 },
+        },
+        right: {
+          run: { src: "../images/player1-runRight.png", framesMax: 2 },
+          stop: { src: "../images/player1-stopRight.png", framesMax: 1 },
+        },
+        left: {
+          run: { src: "../images/player1-runLeft.png", framesMax: 2 },
+          stop: { src: "../images/player1-stopLeft.png", framesMax: 1 },
+        },
+      },
+    },
+  ],
+  enemies: [
+    {
+      characteristics: {
+        width: 40,
+        height: 40,
+        defaultVelocity: { x: 2, y: 2 },
+        image: {
+          width: 40,
+          height: 60,
+          offset: { x: 2, y: 0 },
+        },
+      },
+      audios: {
+        dies: { src: "../sounds/enemyDies.mp3" },
+      },
+      animations: {
+        up: {
+          run: { src: "../images/enemy1-runUp.png", framesMax: 4 },
+          stop: { src: "../images/enemy1-stopUp.png", framesMax: 1 },
+        },
+        down: {
+          run: { src: "../images/enemy1-runDown.png", framesMax: 4 },
+          stop: { src: "../images/enemy1-stopDown.png", framesMax: 1 },
+        },
+        right: {
+          run: { src: "../images/enemy1-runRight.png", framesMax: 4 },
+          stop: { src: "../images/enemy1-stopRight.png", framesMax: 1 },
+        },
+        left: {
+          run: { src: "../images/enemy1-runLeft.png", framesMax: 4 },
+          stop: { src: "../images/enemy1-stopLeft.png", framesMax: 1 },
+        },
+      },
+    },
+  ],
   wall: {
     width: 50,
     height: 50,
@@ -23,48 +129,54 @@ const config = {
     timer: 2000,
   },
   artifact: {
-    timer: 5000,
+    timer: 10000,
+    defaultQty: 3,
+  },
+  score: {
+    wall: 5,
+    explosion: 1,
+    artifact: 10,
   },
   artifacts: [
     {
-      code: dictionary.artifact.bomb,
+      code: dictionary.element.bomb,
       width: 50,
       height: 50,
       image: { src: "../images/artifact-bomb.png", framesMax: 2 },
     },
     {
-      code: dictionary.artifact.flame,
+      code: dictionary.element.flame,
       width: 50,
       height: 50,
       image: { src: "../images/artifact-flame.png", framesMax: 2 },
     },
-    {
-      code: dictionary.artifact.roller,
+    /* {
+      code: dictionary.element.roller,
       width: 50,
       height: 50,
       image: { src: "../images/artifact-roller.png", framesMax: 2 },
-    },
+    },*/
   ],
   flame: {
     width: 50,
     height: 50,
     image: {
       center: { src: "../images/flame-center.png", framesMax: 3 },
-      N: {
-        top: { src: "../images/flame-topN.png", framesMax: 3 },
-        middle: { src: "../images/flame-middleNS.png", framesMax: 3 },
+      up: {
+        top: { src: "../images/flame-topUp.png", framesMax: 3 },
+        middle: { src: "../images/flame-middleUD.png", framesMax: 3 },
       },
-      S: {
-        top: { src: "../images/flame-topS.png", framesMax: 3 },
-        middle: { src: "../images/flame-middleNS.png", framesMax: 3 },
+      down: {
+        top: { src: "../images/flame-topDown.png", framesMax: 3 },
+        middle: { src: "../images/flame-middleUD.png", framesMax: 3 },
       },
-      E: {
-        top: { src: "../images/flame-topE.png", framesMax: 3 },
-        middle: { src: "../images/flame-middleWE.png", framesMax: 3 },
+      right: {
+        top: { src: "../images/flame-topRight.png", framesMax: 3 },
+        middle: { src: "../images/flame-middleRL.png", framesMax: 3 },
       },
-      W: {
-        top: { src: "../images/flame-topW.png", framesMax: 3 },
-        middle: { src: "../images/flame-middleWE.png", framesMax: 3 },
+      left: {
+        top: { src: "../images/flame-topLeft.png", framesMax: 3 },
+        middle: { src: "../images/flame-middleRL.png", framesMax: 3 },
       },
     },
   },
@@ -76,6 +188,5 @@ const config = {
   bomb: {
     timer: 2000,
     imageSrc: "../images/bomb.png",
-    power: 2,
   },
 };

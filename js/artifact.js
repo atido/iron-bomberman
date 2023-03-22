@@ -1,6 +1,6 @@
 class Artifact extends ComponentImageAnimation {
   constructor(x, y) {
-    const artifact = this.random();
+    const artifact = config.artifacts[Math.floor(Math.random() * config.artifacts.length)];
     super(
       x,
       y,
@@ -11,11 +11,8 @@ class Artifact extends ComponentImageAnimation {
       {
         x: 1,
         y: 0,
-      },
-      Math.ceil(config.artifact.timer / (16 * artifact.image.framesMax))
+      }
     );
-  }
-  random() {
-    return config.artifacts[Math.floor(Math.random() * config.artifacts.length)];
+    this.code = artifact.code;
   }
 }

@@ -6,13 +6,15 @@ const game = {
   animationFrameId: undefined,
   gameOver: false,
   player: undefined,
+  enemies: [],
   background: undefined,
   obstacles: [],
+  remainingArtifacts: undefined,
   timer: config.timer.main,
   start() {
     this.checkIfGameRun();
     this.reset();
-    timer(game.timer, "#main-timer");
+    timer(game.timer, timerId);
     this.animate();
   },
   animate() {
@@ -25,11 +27,34 @@ const game = {
   },
   reset() {
     this.obstacles = [];
+    this.enemies = [];
     this.gameOver = false;
-    this.player = new Player(config.wall.width, config.wall.height);
+    this.player = new Player(config.wall.width + 5, config.wall.height + 5);
+    /*this.enemies.push(new Enemy(205, 55));
+    this.enemies.push(new Enemy(225, 55));
+    this.enemies.push(new Enemy(205, 55));
+    this.enemies.push(new Enemy(225, 55));*/
     this.background = new Background();
     this.generateWalls();
+    //this.obstacles.push(new Bomb(500, 55));
+    //this.obstacles.push(new Bomb(400, 55));
     this.timer = config.timer.main;
+    this.remainingArtifacts = config.artifact.defaultQty;
+  },
+  updateAll() {
+    this.background.update();
+    this.obstacles.forEach((obstacle) => obstacle.update());
+    this.enemies = this.enemies.filter((enemy) => !enemy.isDead);
+    this.enemies.forEach((enemy) => enemy.update());
+    this.player.update();
+  },
+  checkGameOver() {
+    return this.player.isDead;
+  },
+  checkIfGameRun() {
+    if (this.animationFrameId) {
+      cancelAnimationFrame(this.animationFrameId);
+    }
   },
   generateWalls() {
     map.forEach((row, i) => {
@@ -44,43 +69,5 @@ const game = {
         }
       });
     });
-  },
-
-  updateAll() {
-    this.background.update();
-    this.obstacles.forEach((obstacle) => obstacle.update());
-    this.player.move();
-    this.checkCollision();
-    this.player.update();
-  },
-  checkGameOver() {
-    return this.player.isDead;
-  },
-  checkIfGameRun() {
-    if (this.animationFrameId) {
-      cancelAnimationFrame(this.animationFrameId);
-    }
-  },
-  checkCollision() {
-    // Filtre uniquement sur le carré de 3x3 pour réduire les collisions à tester
-    this.obstacles
-      .filter(
-        (obstacle) =>
-          obstacle.left() >=
-            this.player.left() - config.wall.width - (this.player.left() % config.wall.width) &&
-          obstacle.right() <=
-            this.player.right() +
-              config.wall.width +
-              (config.wall.width - (this.player.right() % config.wall.width)) &&
-          obstacle.top() >=
-            this.player.top() - (this.player.top() % config.wall.height) - config.wall.height &&
-          obstacle.bottom() <=
-            this.player.bottom() +
-              config.wall.height +
-              (config.wall.height - (this.player.bottom() % config.wall.height))
-      )
-      .forEach((obstacle) => {
-        this.player.hitWith(obstacle);
-      });
   },
 };
