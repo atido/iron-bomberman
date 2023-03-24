@@ -57,14 +57,11 @@ class Bomb extends ComponentImageAnimation {
   }
 
   checkWallPresence(position) {
-    return game.obstacles.find(
-      (obstacle) =>
-        obstacle.x == position.x && obstacle.y == position.y && obstacle.constructor === Wall
-    );
+    return game.walls.find((wall) => wall.x == position.x && wall.y == position.y);
   }
 
   createFlame(position, imageType) {
-    game.obstacles.push(new Flame(position.x, position.y, imageType));
-    this.decreaseTimerBeforeRemove(position, Flame, config.bomb.timer);
+    game.flames.push(new Flame(position.x, position.y, imageType));
+    this.decreaseTimerBeforeRemove(position, game.flames, config.bomb.timer);
   }
 }

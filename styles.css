@@ -3,6 +3,10 @@
   padding: 0;
 }
 
+img {
+  display: block;
+}
+
 body {
   font-family: "VT323", Arial;
   display: flex;
@@ -11,6 +15,8 @@ body {
   align-items: center;
   font-size: 1.5rem;
   background: url("images/background-mushrooms.png") transparent repeat center;
+  margin-top: 2rem;
+  position: relative;
 }
 
 header {
@@ -19,7 +25,8 @@ header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #f78200;
+  background-color: #ff6e02;
+  border: 1px solid black;
 }
 
 .player {
@@ -68,4 +75,93 @@ canvas {
 }
 #time {
   margin: auto;
+}
+
+#game-choice {
+  text-align: center;
+}
+
+#instructions {
+  display: none;
+}
+
+.instructions__container,
+.game-over__container {
+  padding: 2rem;
+  width: 50rem;
+  text-align: center;
+  background-color: #ff6e02;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.instructions__title {
+  font-size: 3rem;
+}
+
+.instructions__keys {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.instructions__keys-img {
+  width: 10rem;
+}
+
+.instructions__drop-img {
+  width: 3.5rem;
+}
+
+.instructions__commands {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 40rem;
+  gap: 2rem;
+}
+.instructions__equipment {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 1rem;
+}
+.instructions__equipment li {
+  display: flex;
+  gap: 1rem;
+}
+.instructions__equipment-img {
+  border: 1px solid black;
+  height: 2rem;
+}
+
+#game-over {
+  display: none;
+  position: absolute;
+  top: 10rem;
+}
+
+.game-over__img {
+  height: 10rem;
+}
+
+button {
+  background: linear-gradient(to bottom right, #266f8e, #558199);
+  border: 0;
+  border-radius: 12px;
+  color: #ffffff;
+  cursor: pointer;
+  padding: 0.5rem 2rem;
+  transition: box-shadow 0.2s ease-in-out;
+}
+
+button:hover {
+  box-shadow: 0 0 0.25rem rgba(0, 0, 0, 0.5), -0.125rem -0.125rem 1rem rgba(239, 71, 101, 0.5),
+    0.125rem 0.125rem 1rem rgba(255, 154, 90, 0.5);
 }

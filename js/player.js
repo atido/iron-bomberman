@@ -1,6 +1,6 @@
 class Player extends ComponentMovingAnimation {
-  constructor(x, y, keysConfig = keys[0], player = config.players[0]) {
-    super(x, y, player);
+  constructor(keysConfig = keyboard[0].keys, player = config.players[0]) {
+    super(player.defaultPosition.x, player.defaultPosition.y, player);
     this.id = player.id;
     this.keysConfig = keysConfig;
     this.lastKeyPressed = "";
@@ -20,7 +20,7 @@ class Player extends ComponentMovingAnimation {
   }
   move() {
     this.velocity = { x: 0, y: 0 };
-    const obstacles = game.obstacles;
+    const obstacles = game.walls;
     if (this.keysConfig.up.keyPressed && this.lastKeyPressed === this.keysConfig.up.code) {
       for (let i = 0; i < obstacles.length; i++) {
         const obstacle = obstacles[i];
@@ -38,7 +38,6 @@ class Player extends ComponentMovingAnimation {
       this.keysConfig.down.keyPressed &&
       this.lastKeyPressed === this.keysConfig.down.code
     ) {
-      const obstacles = game.obstacles;
       for (let i = 0; i < obstacles.length; i++) {
         const obstacle = obstacles[i];
         const component = new Component(this.x, this.y, this.width, this.height);
@@ -54,7 +53,6 @@ class Player extends ComponentMovingAnimation {
       this.keysConfig.left.keyPressed &&
       this.lastKeyPressed === this.keysConfig.left.code
     ) {
-      const obstacles = game.obstacles;
       for (let i = 0; i < obstacles.length; i++) {
         const obstacle = obstacles[i];
         const component = new Component(this.x, this.y, this.width, this.height);
@@ -70,7 +68,6 @@ class Player extends ComponentMovingAnimation {
       this.keysConfig.right.keyPressed &&
       this.lastKeyPressed === this.keysConfig.right.code
     ) {
-      const obstacles = game.obstacles;
       for (let i = 0; i < obstacles.length; i++) {
         const obstacle = obstacles[i];
         const component = new Component(this.x, this.y, this.width, this.height);
@@ -88,47 +85,31 @@ class Player extends ComponentMovingAnimation {
   }
   dropBomb() {
     if (this.bombQty > 0) {
-      //TODO revoir le placement de bombe
       const position = {
-        x:
-          this.x -
-          (this.x % config.wall.width) -
-          10 *
-            Math.min(
-              Math.max(this.velocity.x, -this.characteristics.defaultVelocity.x),
-              this.characteristics.defaultVelocity.x
-            ),
-        y:
-          this.y -
-          (this.y % config.wall.height) -
-          10 *
-            Math.min(
-              Math.max(this.velocity.y, -this.characteristics.defaultVelocity.y),
-              this.characteristics.defaultVelocity.y
-            ),
+        x: this.x - (this.x % config.wall.width),
+        y: this.y - (this.y % config.wall.height),
       };
       const bomb = new Bomb(position.x, position.y, this.bombPower);
-      game.obstacles.push(bomb);
+      game.bombs.push(bomb);
       --this.bombQty;
       this.updatePageElement(dictionary.element.bomb, this.bombQty);
       dropBombAudio.play();
       this.isDropBomb = true;
-      this.decreaseTimerBeforeRemove(position, Bomb, config.bomb.timer, () => {
+      this.decreaseTimerBeforeRemove(position, game.bombs, config.bomb.timer, () => {
         this.bombQty++;
         this.updatePageElement(dictionary.element.bomb, this.bombQty);
         const wallExplodedCounter = bomb.explosion();
-        console.log(wallExplodedCounter);
         this.score += config.score.explosion + wallExplodedCounter * config.score.wall;
         this.updatePageElement(dictionary.element.score, this.score);
       });
     }
   }
-  catchArtifact(obstacle) {
-    this.removeComponentAtPosition({ x: obstacle.x, y: obstacle.y }, Artifact);
+  catchArtifact(artifact) {
+    this.removeComponentAtPosition({ x: artifact.x, y: artifact.y }, game.artifacts);
     artifactCatchAudio.play();
     this.score += config.score.artifact;
     this.updatePageElement(dictionary.element.score, this.score);
-    switch (obstacle.code) {
+    switch (artifact.code) {
       case dictionary.element.bomb:
         this.bombQty++;
         this.updatePageElement(dictionary.element.bomb, this.bombQty);
@@ -163,30 +144,38 @@ class Player extends ComponentMovingAnimation {
     }
   }
 
-  hitWith(obstacle) {
-    if (this.isCollisionWith(obstacle)) {
-      switch (obstacle.constructor) {
-        case Wall:
+  checkCollision() {
+    if (game.walls.some((wall) => this.isCollisionWith(wall))) {
+      this.stop();
+    } else if (
+      game.flames.some((flame) => this.isCollisionWith(flame)) ||
+      game.enemies.some((enemy) => this.isCollisionWith(enemy))
+    ) {
+      this.dies();
+    } else if (
+      game.players
+        .filter((player) => player.id !== this.id)
+        .some((player) => this.isCollisionWith(player))
+    ) {
+      this.stop();
+    } else {
+      if (game.bombs.some((bomb) => this.isCollisionWith(bomb))) {
+        if (!this.isDropBomb) {
           this.stop();
-          break;
-        case Bomb:
-          if (!this.isDropBomb) {
-            this.stop();
-          }
-          break;
-        case Flame:
-        case Enemy:
-          this.dies();
-          break;
-        case Artifact:
-          this.catchArtifact(obstacle);
-          break;
+        }
+      } else {
+        this.isDropBomb = false;
       }
-    } else if (obstacle.constructor == Bomb) this.isDropBomb = false;
+    }
+    game.artifacts.forEach((artifact) => {
+      if (this.isCollisionWith(artifact)) {
+        this.catchArtifact(artifact);
+      }
+    });
   }
 
   setListeners() {
-    document.onkeydown = (e) => {
+    document.addEventListener("keydown", (e) => {
       switch (e.code) {
         case this.keysConfig.up.code:
           this.keysConfig.up.keyPressed = true;
@@ -212,8 +201,8 @@ class Player extends ComponentMovingAnimation {
           this.dropBomb();
           break;
       }
-    };
-    document.onkeyup = (e) => {
+    });
+    document.addEventListener("keyup", (e) => {
       switch (e.code) {
         case this.keysConfig.up.code:
           this.keysConfig.up.keyPressed = false;
@@ -231,17 +220,15 @@ class Player extends ComponentMovingAnimation {
           this.keysConfig.right.keyPressed = false;
           break;
       }
-    };
+    });
   }
-
-  updateScore() {}
 
   setPageElements() {
     this.pageElements = {
-      [dictionary.element.score]: document.getElementById(`score-player${this.id}`),
-      [dictionary.element.flame]: document.getElementById(`flame-qty-player${this.id}`),
-      [dictionary.element.bomb]: document.getElementById(`bomb-qty-player${this.id}`),
-      [dictionary.element.roller]: document.getElementById(`roller-qty-player${this.id}`),
+      [dictionary.element.score]: document.querySelector(`#player${this.id} #player__score`),
+      [dictionary.element.flame]: document.querySelector(`#player${this.id} #player__flame-qty`),
+      [dictionary.element.bomb]: document.querySelector(`#player${this.id} #player__bomb-qty`),
+      [dictionary.element.roller]: document.querySelector(`#player${this.id} #player__roller-qty`),
     };
     this.updatePageElement(dictionary.element.bomb, this.bombQty);
     this.updatePageElement(dictionary.element.flame, this.bombPower);
@@ -250,5 +237,6 @@ class Player extends ComponentMovingAnimation {
   }
   updatePageElement(pageElement, value) {
     this.pageElements[pageElement].innerHTML = value;
+    0;
   }
 }

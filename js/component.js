@@ -1,5 +1,5 @@
 class Component {
-  constructor(x, y, width, height, velocity = { x: 0, y: 0 }) {
+  constructor(x, y, width, height, velocity = { x: 0, y: 0 }, velocityMax = { x: 0, y: 0 }) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -21,8 +21,8 @@ class Component {
   setVelocity(velocity) {
     this.velocity = velocity;
   }
-  isCollisionWith(obstacle) {
-    const padding = (obstacle.width - this.width) / 2 - 1;
+  isCollisionWith(obstacle, isPaddingNeeded = false) {
+    const padding = isPaddingNeeded ? (obstacle.width - this.width) / 2 - 1 : 0;
     return (
       this.right() + this.velocity.x >= obstacle.left() - padding &&
       this.top() + this.velocity.y <= obstacle.bottom() + padding &&
@@ -30,18 +30,15 @@ class Component {
       this.left() + this.velocity.x <= obstacle.right() + padding
     );
   }
-  decreaseTimerBeforeRemove(position, type, timer, callback) {
+  decreaseTimerBeforeRemove(position, arr, timer, callback) {
     setTimeout(() => {
-      this.removeComponentAtPosition(position, type);
+      this.removeComponentAtPosition(position, arr);
       if (callback) callback();
     }, timer);
   }
-  removeComponentAtPosition(position, type) {
-    const index = game.obstacles.findIndex(
-      (obstacle) =>
-        obstacle.x == position.x && obstacle.y == position.y && obstacle.constructor === type
-    );
-    game.obstacles.splice(index, 1);
+  removeComponentAtPosition(position, arr) {
+    const index = arr.findIndex((element) => element.x == position.x && element.y == position.y);
+    arr.splice(index, 1);
   }
 }
 
@@ -174,7 +171,7 @@ class ComponentMovingAnimation extends ComponentImageAnimation {
       this.framesMax = animation.framesMax;
     }
   }
-  filterObstaclesAround() {
+  /*filterObstaclesAround() {
     return game.obstacles.filter(
       (obstacle) =>
         obstacle.left() >= this.left() - config.wall.width - (this.left() % config.wall.width) &&
@@ -188,19 +185,8 @@ class ComponentMovingAnimation extends ComponentImageAnimation {
             config.wall.height +
             (config.wall.height - (this.bottom() % config.wall.height))
     );
-  }
-  checkCollision() {
-    // Filtre uniquement sur le carré de 3x3 pour réduire les collisions à tester
-    this.filterObstaclesAround().forEach((obstacle) => {
-      this.hitWith(obstacle);
-    });
-    if (this.constructor == Player) game.enemies.forEach((enemy) => this.hitWith(enemy));
-  }
-  hitWith(obstacle) {
-    if (this.isCollisionWith(obstacle)) {
-      this.stop();
-    }
-  }
+  }*/
+
   dies() {
     this.stop();
     playAudio(this.audios.dies.src);

@@ -16,19 +16,15 @@ class Wall extends ComponentImageAnimation {
   }
   breakWall(wall) {
     this.animate = true;
-    this.decreaseTimerBeforeRemove({ x: wall.x, y: wall.y }, Wall, config.wall.timer, () => {
+    this.decreaseTimerBeforeRemove({ x: wall.x, y: wall.y }, game.walls, config.wall.timer, () => {
       if (
-        randomLuck(
-          game.remainingArtifacts,
-          game.obstacles.filter((obstacle) => obstacle.constructor === Wall && obstacle.breakable)
-            .length + 1
-        )
+        randomLuck(game.remainingArtifacts, game.walls.filter((wall) => wall.breakable).length + 1)
       ) {
         const artifact = new Artifact(wall.x, wall.y);
-        game.obstacles.push(artifact);
+        game.artifacts.push(artifact);
         this.decreaseTimerBeforeRemove(
           { x: artifact.x, y: artifact.y },
-          Artifact,
+          game.artifacts,
           config.artifact.timer
         );
         game.remainingArtifacts--;
