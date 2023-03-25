@@ -151,6 +151,13 @@ canvas {
   height: 10rem;
 }
 
+footer {
+  margin-top: 2rem;
+  font-size: 0.9rem;
+  color: gray;
+  text-align: center;
+}
+
 button {
   background: linear-gradient(to bottom right, #266f8e, #558199);
   border: 0;

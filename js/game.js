@@ -78,7 +78,7 @@ const game = {
   },
   createEnemies() {
     this.enemies.push(new Enemy());
-    setInterval(() => this.enemies.push(new Enemy()), 5000);
+    setInterval(() => this.enemies.push(new Enemy()), config.timer.enemies * 1000);
   },
   getWinner() {
     let player = this.players.filter((player) => !player.isDead)[0];
@@ -88,6 +88,7 @@ const game = {
     return { winner: player.id, score: player.score };
   },
   generateWalls() {
+    const map = this.playersNb > 1 ? mapBattle : mapSolo;
     map.forEach((row, i) => {
       row.forEach((element, j) => {
         switch (element) {

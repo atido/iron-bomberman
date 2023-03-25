@@ -21,7 +21,7 @@ const config = {
       characteristics: {
         width: 40,
         height: 40,
-        bombQty: 13,
+        bombQty: 3,
         bombPower: 2,
         defaultVelocity: { x: 5, y: 5 },
         image: {
@@ -62,7 +62,7 @@ const config = {
       characteristics: {
         width: 40,
         height: 40,
-        bombQty: 13,
+        bombQty: 3,
         bombPower: 2,
         defaultVelocity: { x: 5, y: 5 },
         image: {
@@ -200,6 +200,7 @@ const config = {
 
   timer: {
     main: 60,
+    enemies: 5,
   },
 
   bomb: {
