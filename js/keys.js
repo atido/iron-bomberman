@@ -1,6 +1,9 @@
 const keyboard = [
   {
-    image: { move: { src: "../images/arrows.png" }, dropBomb: { src: "../images/drop1.png" } },
+    image: {
+      move: { src: "../images/keys-arrows1.png" },
+      dropBomb: { src: "../images/keys-drop1.png" },
+    },
     keys: {
       up: { code: "ArrowUp", keyPressed: false },
       down: { code: "ArrowDown", keyPressed: false },
@@ -10,13 +13,16 @@ const keyboard = [
     },
   },
   {
-    image: { move: { src: "../images/arrows.png" }, dropBomb: { src: "../images/drop1.png" } },
+    image: {
+      move: { src: "../images/keys-arrows2.png" },
+      dropBomb: { src: "../images/keys-drop2.png" },
+    },
     keys: {
       up: { code: "KeyE", keyPressed: false },
       down: { code: "KeyD", keyPressed: false },
       right: { code: "KeyF", keyPressed: false },
       left: { code: "KeyS", keyPressed: false },
-      bomb: { code: "KeyL", keyPressed: false },
+      bomb: { code: "KeyB", keyPressed: false },
     },
   },
 ];

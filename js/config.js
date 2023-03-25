@@ -51,6 +51,9 @@ const config = {
           run: { src: "../images/player1-runLeft.png", framesMax: 2 },
           stop: { src: "../images/player1-stopLeft.png", framesMax: 1 },
         },
+        health: {
+          dead: { src: "../images/player2-dies.png", framesMax: 6 },
+        },
       },
     },
     {
@@ -89,6 +92,9 @@ const config = {
           run: { src: "../images/player2-runLeft.png", framesMax: 2 },
           stop: { src: "../images/player2-stopLeft.png", framesMax: 1 },
         },
+        health: {
+          dead: { src: "../images/player2-dies.png", framesMax: 6 },
+        },
       },
     },
   ],
@@ -124,6 +130,9 @@ const config = {
         left: {
           run: { src: "../images/enemy1-runLeft.png", framesMax: 4 },
           stop: { src: "../images/enemy1-stopLeft.png", framesMax: 1 },
+        },
+        health: {
+          dead: { src: "../images/enemy1-stopDown.png", framesMax: 1 },
         },
       },
     },

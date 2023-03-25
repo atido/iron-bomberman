@@ -163,6 +163,11 @@ class ComponentMovingAnimation extends ComponentImageAnimation {
     this.velocity.x = this.velocityMax.x;
     this.switchAnimation(this.animations.right.run);
   }
+  dies() {
+    this.stop();
+    playAudio(this.audios.dies.src);
+    this.isDead = true;
+  }
   switchAnimation(animation) {
     if (this.lastAnimation !== animation) {
       this.framesCurrent = 0;
@@ -186,10 +191,4 @@ class ComponentMovingAnimation extends ComponentImageAnimation {
             (config.wall.height - (this.bottom() % config.wall.height))
     );
   }*/
-
-  dies() {
-    this.stop();
-    playAudio(this.audios.dies.src);
-    this.isDead = true;
-  }
 }
