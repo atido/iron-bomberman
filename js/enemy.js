@@ -16,6 +16,7 @@ class Enemy extends ComponentMovingAnimation {
     this.collisions = [];
 
     if (game.flames.some((flame) => this.isCollisionWith(flame, true))) {
+      game.players[0].score += config.score.enemy;
       this.dies();
     }
     for (let direction in this.directions) {

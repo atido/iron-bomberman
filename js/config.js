@@ -152,6 +152,7 @@ const config = {
     wall: 5,
     explosion: 1,
     artifact: 10,
+    enemy: 15,
   },
   artifacts: [
     {
