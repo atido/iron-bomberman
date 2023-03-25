@@ -21,7 +21,7 @@ function generateInstructionsKeys(playersNb) {
   const templateInstructionsKeys = document.querySelector("#instructions__keys-template");
   const instructionsCommandsElement = instructionsElement.querySelector(".instructions__commands");
 
-  for (let i = playersNb; i >= 1; i--) {
+  for (let i = 1; i <= playersNb; i++) {
     const instructionsKeysElement = templateInstructionsKeys.content.cloneNode(true);
     instructionsKeysElement.querySelector(
       ".instructions__keys"
@@ -50,18 +50,20 @@ function showGame(playersNb) {
 function showGameOver(gameEnd, time, playersNb) {
   gameOverElement.style.display = "block";
   const textElement = gameOverElement.querySelector(".game-over__text");
-  const scoresElement = gameOverElement.querySelector(".game-over__scores");
+  const scoreElement = gameOverElement.querySelector(".game-over__scores");
+  const imgElement = gameOverElement.querySelector(".game-over__winner-img");
 
   if (playersNb > 1) {
+    imgElement.src = config.players[gameEnd.winner - 1].avatar.src;
     if (time == 0) {
-      textElement.innerHTML = `Player ${gameEnd.winner} Wins on Score`;
-      scoresElement.innerHTML = gameEnd.score;
+      textElement.innerHTML = `Wins on Score`;
+      scoreElement.innerHTML = gameEnd.score;
     } else {
-      textElement.innerHTML = `Player ${gameEnd.winner} Wins`;
+      textElement.innerHTML = `Wins`;
     }
   } else {
     textElement.innerHTML = `Your Score`;
-    scoresElement.innerHTML = gameEnd.score;
+    scoreElement.innerHTML = gameEnd.score;
   }
 }
 

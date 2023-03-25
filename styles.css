@@ -150,6 +150,14 @@ canvas {
 .game-over__img {
   height: 10rem;
 }
+.game-over__winner-img {
+  display: inline;
+  height: 3rem;
+}
+
+.game-over__text {
+  font-size: 2rem;
+}
 
 footer {
   margin-top: 2rem;
