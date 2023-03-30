@@ -8,7 +8,7 @@ class Wall extends ComponentImageAnimation {
       config.wall.height,
       image.src,
       image.framesMax,
-      breakable ? { x: 1, y: 0 } : { x: 0, y: 0 },
+      { x: 1, y: 0 },
       Math.ceil(config.bomb.timer / (16 * image.framesMax)),
       false
     );
