@@ -104,7 +104,7 @@ const game = {
   },
   timer(htmlId) {
     return setInterval(() => {
-      if (htmlId) document.querySelector(htmlId).innerHTML = --this.time;
+      document.querySelector(htmlId).innerHTML = --this.time;
     }, 1000);
   },
 };

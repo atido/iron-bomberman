@@ -145,7 +145,11 @@ class Player extends ComponentMovingAnimation {
   }
 
   checkCollision() {
-    if (game.walls.some((wall) => this.isCollisionWith(wall))) {
+    if (
+      game.walls.some((wall) => {
+        this.isCollisionWith(wall);
+      })
+    ) {
       this.stop();
     } else if (
       game.flames.some((flame) => this.isCollisionWith(flame)) ||

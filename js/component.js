@@ -1,5 +1,5 @@
 class Component {
-  constructor(x, y, width, height, velocity = { x: 0, y: 0 }, velocityMax = { x: 0, y: 0 }) {
+  constructor(x, y, width, height, velocity = { x: 0, y: 0 }) {
     this.x = x;
     this.y = y;
     this.width = width;
